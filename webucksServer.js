@@ -1,16 +1,17 @@
 const http = require("http");
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-// const { productList } = require("./productList");
+const prisma = new PrismaClient();
+const routes = require("./routes");
+// const bcrypt = require("bcrypt");
+// const jwt = require("jsonwebtoken");
 const { categories } = require("./categories");
 const { productList } = require("./productList");
 const { productDetail } = require("./productDetail");
-// const { productDetail } = require("./productDetail");
-const prisma = new PrismaClient();
+
 const app = express();
 app.use(express.json());
+app.use(routes); //route에 의존성을 가짐
 
 app.get("/", (req, res) => {
   //서버가 켜져 있는지 확인
@@ -23,42 +24,41 @@ app.get("/products", productList); //제품 리스트 API
 app.get("/products/2", productDetail); //제품 상세 API (현재는 상수로 하지만 나중에 변수로 바꿀꺼임)
 
 //회원가입
-app.post("/users/signup", async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// app.post("/users/signup", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
 
-    if (!email || !password) {
-      const err = new Error("KEY_ERROR");
-      err.status = 400;
-      throw err;
-    }
-    if (password.length < 8) {
-      const err = new Error("PASSWORD_TOO_SHORT");
-      err.status = 400;
-      throw err;
-    }
+//     if (!email || !password) {
+//       const err = new Error("KEY_ERROR");
+//       err.status = 400;
+//       throw err;
+//     }
+//     if (password.length < 8) {
+//       const err = new Error("PASSWORD_TOO_SHORT");
+//       err.status = 400;
+//       throw err;
+//     }
 
-    const duplicateUser = await prisma.$queryRaw`
-    SELECT EXISTS (select * from users where email = ${email} ) as success;
-    `;
+//     const duplicateUser = await prisma.$queryRaw`
+//     SELECT EXISTS (select * from users where email = ${email} ) as success;
+//     `;
 
-    if (duplicateUser[0].success == 1) {
-      const err = new Error("EXSITING_USER");
-      err.status = 409;
-      throw err;
-    } else {
-      //// 정상적인 회원가입 성공!
-      const passwordSalt = bcrypt.genSaltSync();
-      const secretPassWord = bcrypt.hashSync(password, passwordSalt); //bcrypt.genSaltSync()로 바꾸기
-      await prisma.$queryRaw` 
-      INSERT INTO users (email, password) VALUES (${email}, ${secretPassWord});
-    `;
-      return res.status(201).json({ message: "SIGNUP_SUCCESS" });
-    }
-  } catch (err) {
-    return res.status(500).json({ message: err.message }); // 6
-  }
-});
+//     if (duplicateUser[0].success == 1) {
+//       const err = new Error("EXSITING_USER");
+//       err.status = 409;
+//       throw err;
+//     } else {
+//       //// 정상적인 회원가입 성공!
+//       const secretPassWord = bcrypt.hashSync(password, bcrypt.genSaltSync()); //bcrypt.genSaltSync()로 바꾸기
+//       await prisma.$queryRaw`
+//       INSERT INTO users (email, password) VALUES (${email}, ${secretPassWord});
+//     `;
+//       return res.status(201).json({ message: "SIGNUP_SUCCESS" });
+//     }
+//   } catch (err) {
+//     return res.status(500).json({ message: err.message }); // 6
+//   }
+// });
 
 //유저테이블 가져오기
 app.get("/users", async (req, res) => {
