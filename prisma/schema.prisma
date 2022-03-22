@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id                      Int             @id @default(autoincrement())
+  name                    String
+  created_at              DateTime?       @default(now())
+  products                products[]
+}
+
+model products {
+  id                      Int             @id @default(autoincrement())
+  korean_name             String          @unique
+  english_name            String?
+  category_id             Int
+  created_at              DateTime?       @default(now())
+  category                categories      @relation(fields: [category_id], references: [id])
+  products_allergies      products_allergies[]
+  product_images          product_images[]
+  nutritions              nutritions[]
+  @@index([category_id], name : "category_id")
+}
+
+model product_images{
+   id                     Int             @id @default(autoincrement())
+   image_url              String
+   product_id             Int
+   created_at             DateTime?       @default(now())
+   product                products        @relation(fields: [product_id], references: [id])
+   @@index([product_id])
+}
+
+model allergies{
+   id                     Int             @id @default(autoincrement())
+   name                   String
+   created_at             DateTime?       @default(now())
+   product_allergies      products_allergies[]
+}
+
+model products_allergies{
+   id                     Int             @id @default(autoincrement())
+   product_id             Int
+   allergy_id             Int
+   created_at             DateTime?       @default(now())
+   allergie               allergies       @relation(fields: [allergy_id], references: [id])
+   product                products        @relation(fields: [product_id], references: [id])
+   @@index([allergy_id], name : "allergy_id")
+   @@index([product_id], name : "product_id")
+}
+
+model nutritions{
+   id                     Int             @id @default(autoincrement())
+   product_id             Int
+   caffein                Int
+   fat                    Int
+   sugar                  Int
+   sodium                 Int
+   product                products       @relation(fields: [product_id], references: [id])
+   @@index([product_id])
+}
+
+model users{
+   id                     Int             @id @default(autoincrement())
+   username               String?
+   email                  String          @unique
+   password               String          
+   address                String?
+   phone_number           String?
+   policy_agreed          Boolean         @default(true)  
+}
+
