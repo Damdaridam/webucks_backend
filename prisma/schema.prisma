@@ -77,5 +77,6 @@ model users{
    phone_number           String?
    policy_agreed          Boolean         @default(true)  
    created_at             DateTime?       @default(now())
+   updated_at             DateTime?
 }
 

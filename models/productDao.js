@@ -1,8 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getProductList = async () => {
-  console.log("productDao here!");
+const getProductList = async (categoryId) => {
+  console.log("productDao here!", categoryId);
   const product = await prisma.$queryRaw`
     SELECT  
     p.id, p.korean_name, p.english_name, p.category_id,
@@ -13,6 +13,7 @@ const getProductList = async () => {
     ON p.category_id = c.id
     LEFT JOIN product_images as pi 
     ON p.id = pi.product_id
+    WHERE p.category_id=${categoryId}
     ORDER BY p.id
     `;
   console.log("product in Dao :", product);
@@ -26,7 +27,7 @@ const getCategoryList = async () => {
   return category;
 };
 
-const getDetailList = async () => {
+const getDetailList = async (id) => {
   const detail = await prisma.$queryRaw`
   SELECT 
   p.id,
@@ -48,10 +49,9 @@ const getDetailList = async () => {
 
   LEFT JOIN allergies AS al
   ON pa.allergy_id = al.id
+  where p.id = ${id}
   `;
   return detail;
 };
 
-
-
-module.exports = { getProductList, getCategoryList, getDetailList};
+module.exports = { getProductList, getCategoryList, getDetailList };

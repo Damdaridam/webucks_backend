@@ -1,39 +1,38 @@
 const productService = require("../services/productService");
 
-const getProductList = async (req, res, next) => {
+const getProductList = async (req, res) => {
+  //특정 카테고리에 따라서 나오도록 변경
   try {
-    console.log("controller here!!");
-    const productList = await productService.getProductList();
-    console.log(productList);
+    const categoryId = req.url.split("/")[2];
+    const productList = await productService.getProductList(categoryId);
     return res.status(201).json({ productList: productList });
   } catch (err) {
     console.log(err);
-    // next(err);
   }
 };
 
-const getCategoryList = async (req, res, next) => {
+const getCategoryList = async (req, res) => {
   try {
-    console.log("GET category controller here!!");
+    console.log(req.headers);
+    console.log(req.headers.token);
+
     const categoryList = await productService.getCategoryList();
-    console.log(categoryList);
     return res.status(201).json({ categoryList: categoryList });
   } catch (err) {
     console.log(err);
   }
 };
 
-const getDetailList = async (req, res, next) => {
+const getDetailList = async (req, res) => {
+  //누른 product id를 통해 해당 제품 정보만 가져옴
   try {
-    console.log("GET detail controller here!!");
-    const detailList = await productService.getDetailList();
+    const id = req.url.split("/")[1];
+    const detailList = await productService.getDetailList(id);
     return res.status(201).json({ productDetailList: detailList });
   } catch (err) {
     console.log(err);
   }
 };
-
-
 
 module.exports = {
   getProductList,
