@@ -5,6 +5,6 @@ const userController = require("../controllers/userController");
 router.post("/signup", userController.checkPasswordPresence);
 router.post("/login", userController.logincheckPasswordPresence);
 router.get("/", userController.getTotalUserdata);
-router.put("/", userController.updateUserPassword)
+router.put("/", userController.updateUserPassword);
 
 module.exports = router; // 이렇게 내보내면 부모 router 에 자동으로 연결됩니다.

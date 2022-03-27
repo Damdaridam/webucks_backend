@@ -54,7 +54,10 @@ const logincheckBusinessPolicy = async (email, password, next) => {
     throw err;
   }
 
-  const token = jwt.sign(compareUserPassword[0].id, "tokenhere"); //(compareUserPassword[0].id, "tokenhere")
+  const token = jwt.sign(
+    { userID: compareUserPassword[0].id },
+    process.env.SECRET_KEY
+  ); //(compareUserPassword[0].id, "tokenhere")
   console.log(token);
   return token;
 };
